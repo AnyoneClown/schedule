@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 import time, os
 from bs4 import BeautifulSoup as bs
 import pandas as pd
+from tabulate import tabulate
 
 class SeleniumActions:
     def __init__(self):
@@ -44,7 +45,6 @@ class SeleniumActions:
         return dates, tables
 
     def visualize(self, dates, tables):
-
         tables = pd.read_html(str(tables))
 
         output_folder = "C:\\Programming\\python\\Pet Project\\schedule"
@@ -60,9 +60,10 @@ class SeleniumActions:
                     current_date = dates[i].text
                     file.write(f"{current_date}\n\n")
 
-                if table is not None:  # Check if table is not None before using it
+                if table is not None:
                     file.write(f"Таблиця {i + 1}:\n")
-                    file.write(table.to_string(index=False) + "\n\n")
+                    formatted_table = tabulate(table, headers='keys', tablefmt='grid', showindex=False)
+                    file.write(formatted_table + "\n\n")
 
 
     def close(self):
