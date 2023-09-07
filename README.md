@@ -1,2 +1,2 @@
 # schedule
-Selenium + BeautifulSoup
+Selenium + BeautifulSoup + Pandas + tabulate
