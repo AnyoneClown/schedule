@@ -21,6 +21,11 @@ class SeleniumActions:
         self.driver.find_element(By.ID, "group").send_keys(group)
         self.driver.find_element(By.XPATH, '//*[@id="wrap"]/div/div/div/div[2]/form/div[3]/div[3]/button').click()
 
+    def get_times(self, soup):
+        times = soup.find("div", class_="col-sm-4")
+        print(times)
+        return times
+
     def get_dates(self, soup):
         divs = soup.find_all("div", class_="col-md-6")
         dates = []
@@ -40,11 +45,13 @@ class SeleniumActions:
 
     def parse(self):
         soup = bs(self.driver.page_source, "lxml")
+        times = self.get_times(soup)
         dates = self.get_dates(soup)
         tables = self.get_tables(soup)
-        return dates, tables
+        return times, dates, tables
 
-    def visualize(self, dates, tables):
+    def visualize(self, times, dates, tables):
+        times = pd.read_html(str(times))
         tables = pd.read_html(str(tables))
 
         output_folder = "C:\\Programming\\python\\Pet Project\\schedule"
@@ -55,6 +62,11 @@ class SeleniumActions:
         output_file = os.path.join(output_folder, "розклад.txt")
 
         with open(output_file, 'w', encoding="utf-8") as file:
+            for i, time in enumerate(times):
+                if time is not None:
+                    formatted_table = tabulate(time, headers='keys', tablefmt='grid', showindex=False)
+                    file.write(formatted_table + "\n\n")
+
             for i, table in enumerate(tables):
                 if i < len(dates):
                     current_date = dates[i].text
@@ -73,6 +85,6 @@ class SeleniumActions:
 selenium_actions = SeleniumActions()
 selenium_actions.open_website("https://dekanat.kubg.edu.ua/cgi-bin/timetable.cgi?n=700")
 selenium_actions.values("ІНб22240д")
-dates, tables = selenium_actions.parse()
-selenium_actions.visualize(dates, tables)
+times, dates, tables = selenium_actions.parse()
+selenium_actions.visualize(times, dates, tables)
 selenium_actions.close()
