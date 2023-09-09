@@ -23,7 +23,6 @@ class SeleniumActions:
 
     def get_times(self, soup):
         times = soup.find("div", class_="col-sm-4")
-        print(times)
         return times
 
     def get_dates(self, soup):
